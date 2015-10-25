@@ -612,6 +612,7 @@ public class RWayTrieTest {
     @Test
     public void testWordsWithPrefixWhenPrefixIsNull() {
         RWayTrie rWayTrie = new RWayTrie();
+        rWayTrie.add(wordHello);
 
         Queue<String> iter = (Queue<String>)rWayTrie.wordsWithPrefix(null);
         

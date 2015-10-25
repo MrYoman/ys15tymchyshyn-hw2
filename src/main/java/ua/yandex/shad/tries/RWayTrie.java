@@ -18,7 +18,11 @@ public class RWayTrie implements Trie {
         }
         
         public WordTree[] getSubtree() {
-            return subtree;
+            WordTree[] result = new WordTree[ALPHABET_SIZE];
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                result[i] = subtree[i];
+            }
+            return result;
         }
     }
     
@@ -127,17 +131,17 @@ public class RWayTrie implements Trie {
         return successDelete;
     }
 
-    private WordTree get(WordTree vertex, String word, int distance) { 
-        if (vertex == null) {
+    private WordTree get(WordTree vert, String word, int dist) { 
+        if (vert == null) {
             return null;
         }
         
-        if (distance == word.length()) {
-            return vertex;
+        if (dist == word.length()) {
+            return vert;
         }
         
-        int nextIndex = word.charAt(distance) - FIRST_CHAR_IN_ALPHABET;
-        return get(vertex.subtree[nextIndex], word, distance + 1);
+        int nextIndex = word.charAt(dist) - FIRST_CHAR_IN_ALPHABET;
+        return get(vert.subtree[nextIndex], word, dist + 1);
     }
     
     @Override

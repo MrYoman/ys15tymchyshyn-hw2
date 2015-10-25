@@ -13,9 +13,9 @@ import java.util.Iterator;
 
 public class PrefixMatches {
 
-    private final Trie trie = new RWayTrie();
-    
     private static final int DEFAULT_NUM_OF_DIFF_LEN_IN_WORDS_WITH_PREFIX = 3;
+    
+    private final Trie trie = new RWayTrie();
     
     public int add(String... strings) {
         //throw new UnsupportedOperationException("Not supported yet.");
