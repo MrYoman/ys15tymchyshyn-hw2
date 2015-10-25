@@ -1,9 +1,9 @@
 package ua.yandex.shad.collections;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import java.util.InputMismatchException;
 
 public class QueueTest {
         
@@ -49,7 +49,7 @@ public class QueueTest {
         assertEquals(result, expResult);
     }
     
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testDequeueWhenIsEmpty() {
         Queue<String> queue = new Queue<String>();
         
@@ -174,7 +174,7 @@ public class QueueTest {
         assertEquals(expResult, result);
     }
     
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testIteratorNextWhenNextDoesNotExist() {
         Queue<String> queue = new Queue<String>();
         
@@ -188,6 +188,59 @@ public class QueueTest {
         iter.next();
       
         iter.next();
+    }
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorRemoveWhenPrevIsNull() {
+        Queue<String> queue = new Queue<String>();
+        
+        queue.enqueue("mpinklmlml");
+        queue.enqueue("jdjml");
+        queue.enqueue("lsdbl");
+        
+        Iterator<String> iter = queue.iterator();
+        
+        iter.remove();
+    }
+    
+    @Test
+    public void testIteratorRemoveWhenPrePrevIsNull() {
+        Queue<String> queue = new Queue<String>();
+        
+        queue.enqueue("mpinklmlml");
+        queue.enqueue("jdjml");
+        queue.enqueue("lsdbl");
+        
+        Iterator<String> iter = queue.iterator();
+        iter.next();
+        
+        iter.remove();
+        
+        String expResult = "jdjml";
+        String result    = queue.getFirstItem();
+        
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testIteratorRemoveWhenPrePrevIsNotNull() {
+        Queue<String> queue = new Queue<String>();
+        
+        queue.enqueue("mpinklmlml");
+        queue.enqueue("jdjml");
+        queue.enqueue("lsdbl");
+        
+        Iterator<String> iter = queue.iterator();
+        iter.next();
+        iter.next();
+        
+        iter.remove();
+        queue.dequeue();
+        
+        String expResult = "lsdbl";
+        String result    = queue.dequeue();
+        
+        assertEquals(expResult, result);
     }
     
 }

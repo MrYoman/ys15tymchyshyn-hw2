@@ -21,6 +21,7 @@ public class RWayTrieTest {
     
     @Mock private Tuple emptyStringZeroWeight     = Mockito.mock(Tuple.class);
     @Mock private Tuple emptyStringPositiveWeight = Mockito.mock(Tuple.class);
+    @Mock private Tuple stringWithZeroWeight      = Mockito.mock(Tuple.class);
     @Mock private Tuple stringWithOneChar         = Mockito.mock(Tuple.class);
     @Mock private Tuple stringWithTwoChars        = Mockito.mock(Tuple.class);
     @Mock private Tuple bigStringWithVal          = Mockito.mock(Tuple.class);
@@ -43,6 +44,9 @@ public class RWayTrieTest {
         when(emptyStringPositiveWeight.getTerm()).thenReturn("");
         when(emptyStringPositiveWeight.getWeight()).thenReturn(100);
         
+        when(stringWithZeroWeight.getTerm()).thenReturn("yui");
+        when(stringWithZeroWeight.getWeight()).thenReturn(0);
+                
         when(stringWithOneChar.getTerm()).thenReturn("c");
         when(stringWithOneChar.getWeight()).thenReturn(5);
         
@@ -82,9 +86,9 @@ public class RWayTrieTest {
         
         int expResult = 0;
         
-        assertEquals(root.weight, expResult);
+        assertEquals(root.getWeight(), expResult);
         for (int i = 0; i < 26; i++) {
-            assertEquals(root.subtree[i], null);
+            assertEquals(root.getSubtree()[i], null);
         }
     }
     
@@ -101,9 +105,28 @@ public class RWayTrieTest {
         
         int expResult = 0;
         
-        assertEquals(root.weight, expResult);
+        assertEquals(root.getWeight(), expResult);
         for (int i = 0; i < 26; i++) {
-            assertEquals(root.subtree[i], null);
+            assertEquals(root.getSubtree()[i], null);
+        }
+    }
+    
+    @Test
+    public void testAddStringWithZeroWeight() {
+        /*
+        when(emptyStringPositiveWeight.getTerm()).thenReturn("");
+        when(emptyStringPositiveWeight.getWeight()).thenReturn(100);
+        */
+        RWayTrie rWayTrie = new RWayTrie();
+        
+        rWayTrie.add(stringWithZeroWeight);
+        RWayTrie.WordTree root = rWayTrie.getRoot();
+        
+        int expResult = 0;
+        
+        assertEquals(root.getWeight(), expResult);
+        for (int i = 0; i < 26; i++) {
+            assertEquals(root.getSubtree()[i], null);
         }
     }
     
@@ -117,9 +140,9 @@ public class RWayTrieTest {
         
         int expResult = 5;
         
-        assertEquals(root.subtree[2].weight, expResult);
+        assertEquals(root.getSubtree()[2].getWeight(), expResult);
         for (int i = 0; i < 26; i++) {
-            assertEquals(root.subtree[2].subtree[i], null);
+            assertEquals(root.getSubtree()[2].getSubtree()[i], null);
         }
     }
  
@@ -133,9 +156,11 @@ public class RWayTrieTest {
         
         int expResult = 10;
         
-        assertEquals(root.subtree[3].subtree[5].weight, expResult);
+        assertEquals(root.getSubtree()[3].getSubtree()[5].getWeight(), 
+                                                                expResult);
         for (int i = 0; i < 26; i++) {
-            assertEquals(root.subtree[3].subtree[5].subtree[i], null);
+            assertEquals(root.getSubtree()[3].getSubtree()[5].getSubtree()[i], 
+                                                                        null);
         }
     }
     
@@ -151,12 +176,12 @@ public class RWayTrieTest {
   
         for (int i = 0; i < BIG_STRING.length(); i++) {
             int c = BIG_STRING.charAt(i) - 'a';
-            root = root.subtree[c];
+            root = root.getSubtree()[c];
         }
         
-        assertEquals(root.weight, expResult);
+        assertEquals(root.getWeight(), expResult);
         for (int i = 0; i < 26; i++) {
-            assertEquals(root.subtree[i], null);
+            assertEquals(root.getSubtree()[i], null);
         }
     }
     
@@ -356,6 +381,19 @@ public class RWayTrieTest {
         boolean expResult = false;
         
         assertEquals(rWayTrie.delete(wordHelloPeople.getTerm()), expResult);
+    }
+    
+    @Test
+    public void testDeleteWhenWordDoesNotExistAndInclnclicudesInOtherWord() {
+        RWayTrie rWayTrie = new RWayTrie();
+        
+        rWayTrie.add(wordHelloPeople);
+        rWayTrie.add(wordHelloPeoFuckYou);
+        rWayTrie.add(wordWelcomePeople);
+        
+        boolean expResult = false;
+        
+        assertEquals(rWayTrie.delete(wordHello.getTerm()), expResult);
     }
     
     @Test
@@ -564,6 +602,18 @@ public class RWayTrieTest {
         RWayTrie rWayTrie = new RWayTrie();
 
         Queue<String> iter = (Queue<String>)rWayTrie.wordsWithPrefix("yo");
+        
+        boolean expResult = true;
+        boolean result    = iter.isEmpty();
+        
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testWordsWithPrefixWhenPrefixIsNull() {
+        RWayTrie rWayTrie = new RWayTrie();
+
+        Queue<String> iter = (Queue<String>)rWayTrie.wordsWithPrefix(null);
         
         boolean expResult = true;
         boolean result    = iter.isEmpty();

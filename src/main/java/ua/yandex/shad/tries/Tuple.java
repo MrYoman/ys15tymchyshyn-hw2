@@ -1,8 +1,8 @@
 package ua.yandex.shad.tries;
 
 public class Tuple {
-    public final String term;
-    public final int weight;
+    private final String term;
+    private final int weight;
 
     public Tuple(String term, int weight) {
         if (term == null) {

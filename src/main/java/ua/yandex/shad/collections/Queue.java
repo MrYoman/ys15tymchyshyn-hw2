@@ -1,16 +1,17 @@
 package ua.yandex.shad.collections;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class Queue<Item> implements Iterable<Item> {
     
-    private Node first; 
-    private Node last; 
+    private Node first = null; 
+    private Node last  = null; 
     private int size;  
     
     private class Node {
-        Item item;
-        Node next;
+        private Item item;
+        private Node next;
     }
     
     public boolean isEmpty() {
@@ -37,7 +38,7 @@ public class Queue<Item> implements Iterable<Item> {
     
     public Item dequeue() {
         if (isEmpty()) {
-            throw new IndexOutOfBoundsException();
+            throw new NoSuchElementException();
         }
         Item item = first.item;
         first = first.next;
@@ -57,17 +58,38 @@ public class Queue<Item> implements Iterable<Item> {
     }
     
     private class ListIterator implements Iterator<Item> {
-        private Node current = first;
+        private Node current     = first;
+        private Node previous    = null;
+        private Node prePrevious = null;
+        
         public boolean hasNext() { 
             return current != null; 
         }
-        public void remove() { }
+        
+        public void remove() {
+            if (previous != null) {
+                if (prePrevious != null) {
+                    prePrevious.next = current;
+                }
+                else {
+                    first = current;
+                }
+                previous.next = null;
+                previous = prePrevious;
+            }
+            else {
+                throw new NoSuchElementException();
+            }
+        }
+        
         public Item next() {
             if (current == null) {
-                throw new IndexOutOfBoundsException();
+                throw new NoSuchElementException();
             }
-            Item item = current.item;
-            current = current.next; 
+            Item item   = current.item;
+            prePrevious = previous;
+            previous    = current;
+            current     = current.next; 
             return item;
         }
     } 

@@ -10,23 +10,26 @@ public class RWayTrie implements Trie {
     private boolean  successDelete;
 
     public static class WordTree {    
-        public int weight;
-        public WordTree[] subtree = new WordTree[ALPHABET_SIZE];
+        private int weight;
+        private WordTree[] subtree = new WordTree[ALPHABET_SIZE];
+        
+        public int getWeight() {
+            return weight;
+        }
+        
+        public WordTree[] getSubtree() {
+            return subtree;
+        }
     }
-    /*
-    public Value get(String key) {
-        Node x = get(root, key, 0);
-        if (x == null) return null;
-        return (Value) x.val;
-    }
-*/
     
     public WordTree getRoot() {
         return root;
     }
     
-    private WordTree put(WordTree currentVertex, Tuple wordWeightPair,
+    private WordTree put(WordTree vertex, Tuple wordWeightPair,
                                int distance) {
+        WordTree currentVertex = vertex;
+        
         if (currentVertex == null) {
             currentVertex = new WordTree();
         }
@@ -125,7 +128,7 @@ public class RWayTrie implements Trie {
     }
 
     private WordTree get(WordTree vertex, String word, int distance) { 
-        if (vertex == null || word == null) {
+        if (vertex == null) {
             return null;
         }
         
@@ -155,7 +158,7 @@ public class RWayTrie implements Trie {
     @Override
     public Iterable<String> wordsWithPrefix(String prefix) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        if (isEmpty()) {
+        if (isEmpty() || prefix == null) {
             return new Queue<String>();
         }
         
@@ -182,11 +185,11 @@ public class RWayTrie implements Trie {
                 if (currentSubtree[i] != null) {
                     if (currentSubtree[i].weight != 0) {
                         q.enqueue(currentWord 
-                                      + (char)(i + FIRST_CHAR_IN_ALPHABET));
+                                      + (char) (i + FIRST_CHAR_IN_ALPHABET));
                     }
                     way.enqueue(currentSubtree[i].subtree);
                     words.enqueue(currentWord 
-                                      + (char)(i + FIRST_CHAR_IN_ALPHABET));
+                                      + (char) (i + FIRST_CHAR_IN_ALPHABET));
                 }
             }
         }

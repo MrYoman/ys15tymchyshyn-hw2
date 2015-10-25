@@ -2,7 +2,6 @@ package ua.yandex.shad.tries;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import java.util.InputMismatchException;
 
 public class TupleTest {
 

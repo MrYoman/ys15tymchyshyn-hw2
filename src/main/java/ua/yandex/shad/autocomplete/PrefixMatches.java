@@ -13,7 +13,9 @@ import java.util.Iterator;
 
 public class PrefixMatches {
 
-    private Trie trie = new RWayTrie();
+    private final Trie trie = new RWayTrie();
+    
+    private static final int DEFAULT_NUM_OF_DIFF_LEN_IN_WORDS_WITH_PREFIX = 3;
     
     public int add(String... strings) {
         //throw new UnsupportedOperationException("Not supported yet.");
@@ -53,16 +55,14 @@ public class PrefixMatches {
 
     public Iterable<String> wordsWithPrefix(String pref) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        return wordsWithPrefix(pref, 3);
+        return wordsWithPrefix(pref,
+                               DEFAULT_NUM_OF_DIFF_LEN_IN_WORDS_WITH_PREFIX);
     }
 
     public Iterable<String> wordsWithPrefix(String pref, int k) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        if (pref == null || pref.length() < 2) {
-            return new Queue<String>();
-        }
-        
-        if (((RWayTrie)trie).isEmpty()) {
+        if (pref == null || pref.length() < 2
+                || ((RWayTrie) trie).isEmpty() || k == 0) {
             return new Queue<String>();
         }
         
@@ -80,16 +80,19 @@ public class PrefixMatches {
         currWord   = wordsList.next();
         currLength = currWord.length();
         oldLength  = currLength;
+        result.enqueue(currWord);
         
         int m = 0;
             
         do {
-            result.enqueue(currWord);
             currWord   = wordsList.next();
             currLength = currWord.length();
             if (currLength != oldLength) {
                 m++;
                 oldLength = currLength;
+            }
+            if (m < k) {
+                result.enqueue(currWord);
             }
         } while(wordsList.hasNext() && m < k);
 

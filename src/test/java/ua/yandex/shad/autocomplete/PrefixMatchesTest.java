@@ -1,27 +1,11 @@
 
 package ua.yandex.shad.autocomplete;
 
-import ua.yandex.shad.tries.Tuple;
-import ua.yandex.shad.tries.Trie;
-import ua.yandex.shad.tries.RWayTrie;
 import ua.yandex.shad.collections.Queue;
-import java.util.Iterator;
 
-import java.util.*;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import ua.yandex.shad.tries.Tuple;
  
-@RunWith(MockitoJUnitRunner.class)
 public class PrefixMatchesTest {
 
     @Test
@@ -264,6 +248,114 @@ public class PrefixMatchesTest {
         boolean result    = iter.isEmpty();
         
         assertEquals(expResult, result);
+    }
+    
+    //======================================
+    
+    @Test
+    public void testWordsWithPrefixExpWhenDictIsEmpty() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 10);
+        
+        boolean expResult = true;
+        boolean result    = iter.isEmpty();
+        
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenDictHasSuchWords() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 2);
+        
+        assertEquals("qwe", iter.dequeue());
+        assertEquals("qwert", iter.dequeue());
+        assertEquals(iter.isEmpty(), true);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenDictHasNotSuchWords() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("poqwe", 2);
+        
+        boolean expResult = true;
+        boolean result    = iter.isEmpty();
+        
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenPrefixHasLessThenTwoSymbols() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("q", 2);
+        
+        boolean expResult = true;
+        boolean result    = iter.isEmpty();
+        
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenPrefixIsNull() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix(null, 2);
+        
+        boolean expResult = true;
+        boolean result    = iter.isEmpty();
+        
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenNumbIsTooBig() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 5);
+        
+        assertEquals("qwe", iter.dequeue());
+        assertEquals("qwert", iter.dequeue());
+        assertEquals("qwefgh", iter.dequeue());
+        assertEquals("qweuhb", iter.dequeue());
+        assertEquals("qweijbiksd", iter.dequeue());
+        assertEquals(iter.isEmpty(), true);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenNumbIsZero() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 0);
+        
+        assertEquals(iter.isEmpty(), true);
+    }
+    
+    @Test
+    public void testWordsWithPrefixExpWhenNumbIsOne() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Queue<String> iter;
+        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 1);
+        
+        assertEquals(iter.size(), 1);
     }
     
 }
