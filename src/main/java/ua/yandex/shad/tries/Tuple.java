@@ -2,7 +2,7 @@ package ua.yandex.shad.tries;
 
 public class Tuple {
     private final String term;
-    final int weight;
+    private final int weight;
 
     public Tuple(String term, int weight) {
         if (term == null) {

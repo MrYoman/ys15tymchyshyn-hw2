@@ -11,17 +11,9 @@ public class RWayTrie implements Trie {
     private WordTree root = new WordTree();
     private boolean  successDelete;
 
-    private class WordTree {    
+    private static class WordTree {    
         private int weight;
         private WordTree[] subtree = new WordTree[ALPHABET_SIZE];
-        
-        private WordTree[] getSubtree() {
-            WordTree[] result = new WordTree[ALPHABET_SIZE];
-            for (int i = 0; i < ALPHABET_SIZE; i++) {
-                result[i] = subtree[i];
-            }
-            return result;
-        }
     }
     
     private WordTree put(WordTree vertex, Tuple wordWeightPair,
@@ -49,7 +41,6 @@ public class RWayTrie implements Trie {
 
     @Override
     public void add(Tuple t) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         if (t.getTerm().length() > 0 && t.getWeight() > 0) {
             root = put(root, t, 0);
         }
@@ -57,7 +48,6 @@ public class RWayTrie implements Trie {
 
     @Override
     public boolean contains(String word) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         if (word == null || word.length() == 0) {
             return false;
         }
@@ -113,7 +103,6 @@ public class RWayTrie implements Trie {
     
     @Override
     public boolean delete(String word) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         if (word == null || word.length() == 0) {
             return false;
         }
@@ -140,14 +129,10 @@ public class RWayTrie implements Trie {
     
     @Override
     public Iterable<String> words() {
-        //throw new UnsupportedOperationException("Not supported yet.");
         return wordsWithPrefix(""); 
     }
     
     public boolean isEmpty() {
-        if (root.weight != 0) {
-            return false;
-        }
         for (int i = 0; i < ALPHABET_SIZE; i++) {
             if (root.subtree[i] != null) {
                 return false;
@@ -158,7 +143,6 @@ public class RWayTrie implements Trie {
     
     @Override
     public Iterable<String> wordsWithPrefix(String prefix) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         TreeIterator iterator = new TreeIterator(prefix);
         TreeIterable iterable = new TreeIterable();
         iterable.setIterator(iterator);
@@ -170,8 +154,8 @@ public class RWayTrie implements Trie {
 
         private TreeIterator iterator;
         
-        public void setIterator(TreeIterator iterator) {
-            this.iterator = iterator;
+        public void setIterator(TreeIterator iter) {
+            this.iterator = iter;
         }
         
         @Override
@@ -185,6 +169,13 @@ public class RWayTrie implements Trie {
         
         private String word;
         private TreeIterator next;
+        
+        private Queue<WordTree[]> way   = new Queue<WordTree[]>();
+        private Queue<String>     words = new Queue<String>();
+        
+        private int lastCheckedLetterIndex = ALPHABET_SIZE;
+        private WordTree[] currSubtree;
+        private String currWord;
         
         public TreeIterator() {
             word = null;
@@ -229,16 +220,9 @@ public class RWayTrie implements Trie {
             this.next = iterator;
         }
         
-        public void setWord(String word) {
-            this.word = word;
+        public void setWord(String wordStr) {
+            this.word = wordStr;
         }
-        
-        private Queue<WordTree[]> way   = new Queue<WordTree[]>();
-        private Queue<String>     words = new Queue<String>();
-        
-        private int lastCheckedLetterIndex = ALPHABET_SIZE;
-        private WordTree[] currSubtree;
-        private String currWord;
         
         private String calculateNextWord() {
             String searchedWord = "";
@@ -278,7 +262,7 @@ public class RWayTrie implements Trie {
                 
         @Override
         public boolean hasNext() {
-            return next != null && next.word != null && next.word != "";
+            return next != null && next.word != null && !next.word.equals("");
         }
 
         @Override
@@ -319,7 +303,6 @@ public class RWayTrie implements Trie {
     
     @Override
     public int size() {
-        //throw new UnsupportedOperationException("Not supported yet."); 
         return size(root); 
     }
 
