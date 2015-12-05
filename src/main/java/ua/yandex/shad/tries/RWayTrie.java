@@ -1,6 +1,8 @@
 package ua.yandex.shad.tries;
 
 import ua.yandex.shad.collections.Queue;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class RWayTrie implements Trie {
     static final int  ALPHABET_SIZE          = 26;
@@ -9,25 +11,17 @@ public class RWayTrie implements Trie {
     private WordTree root = new WordTree();
     private boolean  successDelete;
 
-    public static class WordTree {    
+    private class WordTree {    
         private int weight;
         private WordTree[] subtree = new WordTree[ALPHABET_SIZE];
         
-        public int getWeight() {
-            return weight;
-        }
-        
-        public WordTree[] getSubtree() {
+        private WordTree[] getSubtree() {
             WordTree[] result = new WordTree[ALPHABET_SIZE];
             for (int i = 0; i < ALPHABET_SIZE; i++) {
                 result[i] = subtree[i];
             }
             return result;
         }
-    }
-    
-    public WordTree getRoot() {
-        return root;
     }
     
     private WordTree put(WordTree vertex, Tuple wordWeightPair,
@@ -151,6 +145,9 @@ public class RWayTrie implements Trie {
     }
     
     public boolean isEmpty() {
+        if (root.weight != 0) {
+            return false;
+        }
         for (int i = 0; i < ALPHABET_SIZE; i++) {
             if (root.subtree[i] != null) {
                 return false;
@@ -162,43 +159,145 @@ public class RWayTrie implements Trie {
     @Override
     public Iterable<String> wordsWithPrefix(String prefix) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        if (isEmpty() || prefix == null) {
-            return new Queue<String>();
+        TreeIterator iterator = new TreeIterator(prefix);
+        TreeIterable iterable = new TreeIterable();
+        iterable.setIterator(iterator);
+        
+        return iterable;
+    }
+    
+    private class TreeIterable implements Iterable<String> {
+
+        private TreeIterator iterator;
+        
+        public void setIterator(TreeIterator iterator) {
+            this.iterator = iterator;
         }
         
-        Queue<String>     q     = new Queue<String>();
-        Queue<WordTree[]> way   = new Queue<WordTree[]>();
-        Queue<String>     words = new Queue<String>();
-        
-        WordTree prefixVertex = get(root, prefix, 0);
-        if (prefixVertex == null) {
-            return new Queue<String>();
-        }
-        if (prefixVertex.weight != 0) {
-            q.enqueue(prefix);
+        @Override
+        public Iterator<String> iterator() {
+            return new TreeIterator(iterator);
         }
         
-        way.enqueue(prefixVertex.subtree);
-        words.enqueue(prefix);
+    }
+    
+    private class TreeIterator implements Iterator<String> {
         
-        while (!way.isEmpty()) {
-            WordTree[] currentSubtree = way.dequeue();
-            String     currentWord    = words.dequeue();
+        private String word;
+        private TreeIterator next;
+        
+        public TreeIterator() {
+            word = null;
+            next = null;
+        }
+        
+        public TreeIterator(TreeIterator iterator) {
+            this.next = iterator.next;
+            this.word = iterator.word;
+            this.currSubtree = iterator.currSubtree;
+            this.currWord = iterator.currWord;
+            this.lastCheckedLetterIndex = iterator.lastCheckedLetterIndex;
+            this.way = iterator.way;
+            this.words = iterator.words;
+        }
+        
+        public TreeIterator(String prefix) {
+            if (isEmpty() || prefix == null) {
+                return;
+            }
             
-            for (int i = 0; i < ALPHABET_SIZE; i++) {
-                if (currentSubtree[i] != null) {
-                    if (currentSubtree[i].weight != 0) {
-                        q.enqueue(currentWord 
-                                      + (char) (i + FIRST_CHAR_IN_ALPHABET));
-                    }
-                    way.enqueue(currentSubtree[i].subtree);
-                    words.enqueue(currentWord 
-                                      + (char) (i + FIRST_CHAR_IN_ALPHABET));
-                }
+            this.next = new TreeIterator();
+        
+            WordTree prefixVertex = get(root, prefix, 0);
+            
+            if (prefixVertex == null) {
+                return;
+            }
+            
+            this.way.enqueue(prefixVertex.subtree);
+            this.words.enqueue(prefix);
+            
+            if (prefixVertex.weight != 0) {
+                this.next.word = prefix;
+            }
+            else {
+                this.next.word = this.calculateNextWord();
             }
         }
         
-        return q; 
+        public void setNextIterator(TreeIterator iterator) {
+            this.next = iterator;
+        }
+        
+        public void setWord(String word) {
+            this.word = word;
+        }
+        
+        private Queue<WordTree[]> way   = new Queue<WordTree[]>();
+        private Queue<String>     words = new Queue<String>();
+        
+        private int lastCheckedLetterIndex = ALPHABET_SIZE;
+        private WordTree[] currSubtree;
+        private String currWord;
+        
+        private String calculateNextWord() {
+            String searchedWord = "";
+            
+            while (!way.isEmpty()) {
+                if (this.lastCheckedLetterIndex == ALPHABET_SIZE) {
+                    this.currSubtree = way.dequeue();
+                    this.currWord    = words.dequeue();
+                    this.lastCheckedLetterIndex = -1;
+                }
+                
+                int i = this.lastCheckedLetterIndex + 1;
+                boolean flag = false;
+                for (; i < ALPHABET_SIZE; i++) {
+                    if (currSubtree[i] != null) {
+                        
+                        way.enqueue(currSubtree[i].subtree);
+                        words.enqueue(currWord
+                                      + (char) (i + FIRST_CHAR_IN_ALPHABET));
+                        
+                        if (currSubtree[i].weight != 0) {
+                            searchedWord = currWord
+                                        + (char) (i + FIRST_CHAR_IN_ALPHABET);
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                this.lastCheckedLetterIndex = i;
+                if (flag) {
+                    break;
+                }
+            }
+            
+            return searchedWord;
+        }
+                
+        @Override
+        public boolean hasNext() {
+            return next != null && next.word != null && next.word != "";
+        }
+
+        @Override
+        public String next() throws NoSuchElementException {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            
+            word = next.word;
+            next = next.next;
+            if (next == null) {
+                next = new TreeIterator();
+            }
+            
+            next.word = this.calculateNextWord();
+            
+            return word;
+        }
+        
     }
     
     private int size(WordTree vertex) { 

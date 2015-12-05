@@ -10,6 +10,7 @@ import ua.yandex.shad.tries.Trie;
 import ua.yandex.shad.tries.RWayTrie;
 import ua.yandex.shad.collections.Queue;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class PrefixMatches {
 
@@ -63,44 +64,84 @@ public class PrefixMatches {
         //throw new UnsupportedOperationException("Not supported yet.");
         if (pref == null || pref.length() < 2
                 || ((RWayTrie) trie).isEmpty() || k == 0) {
-            return new Queue<String>();
+            return new TrieIterable();
         }
         
-        Iterable<String> yo        = trie.wordsWithPrefix(pref);
-        Iterator<String> wordsList = yo.iterator();
-        Queue<String>    result    = new Queue<String>();
-
-        int currLength, oldLength;
-        String currWord;
-            
-        if (!wordsList.hasNext()) {
-            return new Queue<String>();
-        }
+        Iterator<String> iterator = trie.wordsWithPrefix(pref).iterator();
+        TrieIterable words = new TrieIterable();
+        TrieIterator iter = new TrieIterator(iterator, k);
+        words.setIterator(iter);
         
-        currWord   = wordsList.next();
-        currLength = currWord.length();
-        oldLength  = currLength;
-        result.enqueue(currWord);
-        
-        int m = 0;
-            
-        do {
-            currWord   = wordsList.next();
-            currLength = currWord.length();
-            if (currLength != oldLength) {
-                m++;
-                oldLength = currLength;
-            }
-            if (m < k) {
-                result.enqueue(currWord);
-            }
-        } while(wordsList.hasNext() && m < k);
-
-        return result;
+        return words;
     }
 
     public int size() {
         //throw new UnsupportedOperationException("Not supported yet.");
         return trie.size();
     }
+    
+    private class TrieIterable implements Iterable<String> {
+
+        TrieIterator iterator = new TrieIterator(null ,0);
+        
+        @Override
+        public Iterator<String> iterator() {
+            return iterator;
+        }
+        
+        public void setIterator(TrieIterator iterator) {
+            this.iterator = iterator;
+        }
+        
+    }
+    
+    private class TrieIterator implements Iterator<String> {
+
+        private Iterator<String> iterator;
+        private String nextElem;
+        private int prevLen = 0;
+        private int count;
+        
+        public TrieIterator(Iterator<String> iterator, int count) {
+            this.iterator = iterator;
+            this.count = count;
+            if (iterator != null && iterator.hasNext()) {
+                this.nextElem = iterator.next();
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            if (iterator == null || nextElem == null 
+                    || nextElem.length() != prevLen && count == 0) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            String elem = nextElem;
+            
+            if (!iterator.hasNext()) {
+                nextElem = null;
+            }
+            else {
+                nextElem = iterator.next();
+            }
+            
+            if (elem.length() != prevLen) {
+                count--;
+                prevLen = elem.length();
+            }
+            
+            return elem;
+        }
+        
+    }
+    
 }

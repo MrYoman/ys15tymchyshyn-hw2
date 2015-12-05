@@ -5,6 +5,7 @@ import ua.yandex.shad.collections.Queue;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.util.Iterator;
  
 public class PrefixMatchesTest {
 
@@ -198,11 +199,13 @@ public class PrefixMatchesTest {
     public void testWordsWithPrefixWhenDictIsEmpty() {
         PrefixMatches prefixMatches = new PrefixMatches();
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe");
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe").iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe");
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -212,14 +215,16 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe");
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe").iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe");
         
-        assertEquals("qwe", iter.dequeue());
-        assertEquals("qwert", iter.dequeue());
-        assertEquals("qwefgh", iter.dequeue());
-        assertEquals("qweuhb", iter.dequeue());
-        assertEquals(iter.isEmpty(), true);
+        assertEquals("qwe", iterator.next());
+        assertEquals("qwert", iterator.next());
+        assertEquals("qwefgh", iterator.next());
+        assertEquals("qweuhb", iterator.next());
+        assertEquals(!iterator.hasNext(), true);
     }
     
     @Test
@@ -227,11 +232,14 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("poqwe");
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("poqwe").iterator();
+        
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("poqwe");
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -241,11 +249,13 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("q");
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("q").iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("q");
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -256,11 +266,13 @@ public class PrefixMatchesTest {
     public void testWordsWithPrefixExpWhenDictIsEmpty() {
         PrefixMatches prefixMatches = new PrefixMatches();
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 10);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe", 10).iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 10);
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -270,12 +282,15 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 2);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe", 2).iterator();
         
-        assertEquals("qwe", iter.dequeue());
-        assertEquals("qwert", iter.dequeue());
-        assertEquals(iter.isEmpty(), true);
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 2);
+        
+        assertEquals("qwe", iterator.next());
+        assertEquals("qwert", iterator.next());
+        assertEquals(!iterator.hasNext(), true);
     }
     
     @Test
@@ -283,11 +298,13 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("poqwe", 2);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("poqwe", 2).iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("poqwe", 2);
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -297,11 +314,13 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("q", 2);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("q", 2).iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("q", 2);
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -311,11 +330,13 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix(null, 2);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix(null, 2).iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix(null, 2);
         
         boolean expResult = true;
-        boolean result    = iter.isEmpty();
+        boolean result    = !iterator.hasNext();
         
         assertEquals(expResult, result);
     }
@@ -325,15 +346,17 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 5);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe", 5).iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 5);
         
-        assertEquals("qwe", iter.dequeue());
-        assertEquals("qwert", iter.dequeue());
-        assertEquals("qwefgh", iter.dequeue());
-        assertEquals("qweuhb", iter.dequeue());
-        assertEquals("qweijbiksd", iter.dequeue());
-        assertEquals(iter.isEmpty(), true);
+        assertEquals("qwe", iterator.next());
+        assertEquals("qwert", iterator.next());
+        assertEquals("qwefgh", iterator.next());
+        assertEquals("qweuhb", iterator.next());
+        assertEquals("qweijbiksd", iterator.next());
+        assertEquals(!iterator.hasNext(), true);
     }
     
     @Test
@@ -341,10 +364,12 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 0);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe", 0).iterator();
+        //Queue<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 0);
         
-        assertEquals(iter.isEmpty(), true);
+        assertEquals(!iterator.hasNext(), true);
     }
     
     @Test
@@ -352,10 +377,14 @@ public class PrefixMatchesTest {
         PrefixMatches prefixMatches = new PrefixMatches();
         prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
         
-        Queue<String> iter;
-        iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 1);
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe", 1).iterator();
+        //<String> iter;
+        //iter = (Queue<String>)prefixMatches.wordsWithPrefix("qwe", 1);
         
-        assertEquals(iter.size(), 1);
+        iterator.next();
+        assertEquals(iterator.hasNext(), false);
+        //assertEquals(iterator.size(), 1);
     }
     
 }
