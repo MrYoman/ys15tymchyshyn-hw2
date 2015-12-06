@@ -6,6 +6,7 @@ import ua.yandex.shad.collections.Queue;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
  
 public class PrefixMatchesTest {
 
@@ -385,6 +386,19 @@ public class PrefixMatchesTest {
         iterator.next();
         assertEquals(iterator.hasNext(), false);
         //assertEquals(iterator.size(), 1);
+    }
+    
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorNextHasNextFalse() {
+        PrefixMatches prefixMatches = new PrefixMatches();
+        prefixMatches.add("qwert qweijbiksd", "joijo qwefgh", "qwe qweuhb");
+        
+        Iterator<String> iterator 
+                        = prefixMatches.wordsWithPrefix("qwe", 1).iterator();        
+        
+        iterator.next();
+        iterator.next();
     }
     
 }
