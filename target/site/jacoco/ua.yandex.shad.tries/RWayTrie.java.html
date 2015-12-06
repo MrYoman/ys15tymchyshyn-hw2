@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RWayTrie.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Autocomplete</a> &gt; <a href="index.source.html" class="el_package">ua.yandex.shad.tries</a> &gt; <span class="el_source">RWayTrie.java</span></div><h1>RWayTrie.java</h1><pre class="source lang-java linenums">package ua.yandex.shad.tries;
+
+import ua.yandex.shad.collections.Queue;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+<span class="fc" id="L7">public class RWayTrie implements Trie {</span>
+    static final int  ALPHABET_SIZE          = 26;
+    static final char FIRST_CHAR_IN_ALPHABET = 'a';
+    
+<span class="fc" id="L11">    private WordTree root = new WordTree();</span>
+    private boolean  successDelete;
+
+<span class="fc" id="L14">    private static class WordTree {    </span>
+        private int weight;
+<span class="fc" id="L16">        private WordTree[] subtree = new WordTree[ALPHABET_SIZE];</span>
+    }
+    
+    private WordTree put(WordTree vertex, Tuple wordWeightPair,
+                               int distance) {
+<span class="fc" id="L21">        WordTree currentVertex = vertex;</span>
+        
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (currentVertex == null) {</span>
+<span class="fc" id="L24">            currentVertex = new WordTree();</span>
+        }
+        
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (wordWeightPair.getTerm().length() == distance) {</span>
+<span class="fc" id="L28">            currentVertex.weight = wordWeightPair.getWeight();</span>
+<span class="fc" id="L29">            return currentVertex;</span>
+        }
+        
+<span class="fc" id="L32">        int nextVertex = wordWeightPair.getTerm().charAt(distance)</span>
+                                                    -FIRST_CHAR_IN_ALPHABET;
+<span class="fc" id="L34">        currentVertex.subtree[nextVertex] = put(currentVertex.subtree[</span>
+                                                nextVertex],
+                                                wordWeightPair, distance + 1);
+        
+<span class="fc" id="L38">        return currentVertex;</span>
+    }
+
+
+    @Override
+    public void add(Tuple t) {
+<span class="fc bfc" id="L44" title="All 4 branches covered.">        if (t.getTerm().length() &gt; 0 &amp;&amp; t.getWeight() &gt; 0) {</span>
+<span class="fc" id="L45">            root = put(root, t, 0);</span>
+        }
+<span class="fc" id="L47">    }</span>
+
+    @Override
+    public boolean contains(String word) {
+<span class="fc bfc" id="L51" title="All 4 branches covered.">        if (word == null || word.length() == 0) {</span>
+<span class="fc" id="L52">            return false;</span>
+        }
+        
+<span class="fc" id="L55">        WordTree vertex = root;</span>
+<span class="fc" id="L56">        int length      = word.length();</span>
+        
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc" id="L59">            int nextIndex = word.charAt(i) - FIRST_CHAR_IN_ALPHABET;</span>
+            
+<span class="fc" id="L61">            vertex = vertex.subtree[nextIndex];</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (vertex == null) {</span>
+<span class="fc" id="L63">                return false;</span>
+            }
+        }
+        
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (vertex.weight == 0) {</span>
+<span class="fc" id="L68">            return false;</span>
+        }
+        
+<span class="fc" id="L71">        return true;</span>
+    }
+    
+    private WordTree delete(WordTree vertex, String word, int distance) {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (vertex == null) {</span>
+<span class="fc" id="L76">            return null;</span>
+        }
+        
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (distance == word.length()) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            if (vertex.weight != 0) {</span>
+<span class="fc" id="L81">                successDelete = true;</span>
+<span class="fc" id="L82">                vertex.weight = 0;</span>
+            }
+        }
+        else { 
+<span class="fc" id="L86">            int nextIndex = word.charAt(distance) - FIRST_CHAR_IN_ALPHABET;</span>
+<span class="fc" id="L87">            vertex.subtree[nextIndex] = delete(vertex.subtree[nextIndex], word, </span>
+                                            distance + 1);
+        }
+        
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (vertex.weight != 0) {</span>
+<span class="fc" id="L92">            return vertex;</span>
+        }
+        
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (int i = 0; i &lt; ALPHABET_SIZE; i++) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (vertex.subtree[i] != null) {</span>
+<span class="fc" id="L97">                return vertex;</span>
+            }
+        }
+        
+<span class="fc" id="L101">        return null; </span>
+    }
+    
+    @Override
+    public boolean delete(String word) {
+<span class="fc bfc" id="L106" title="All 4 branches covered.">        if (word == null || word.length() == 0) {</span>
+<span class="fc" id="L107">            return false;</span>
+        }
+        
+<span class="fc" id="L110">        successDelete = false;</span>
+        
+<span class="fc" id="L112">        root = delete(root, word, 0); </span>
+        
+<span class="fc" id="L114">        return successDelete;</span>
+    }
+
+    private WordTree get(WordTree vert, String word, int dist) { 
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (vert == null) {</span>
+<span class="fc" id="L119">            return null;</span>
+        }
+        
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (dist == word.length()) {</span>
+<span class="fc" id="L123">            return vert;</span>
+        }
+        
+<span class="fc" id="L126">        int nextIndex = word.charAt(dist) - FIRST_CHAR_IN_ALPHABET;</span>
+<span class="fc" id="L127">        return get(vert.subtree[nextIndex], word, dist + 1);</span>
+    }
+    
+    @Override
+    public Iterable&lt;String&gt; words() {
+<span class="fc" id="L132">        return wordsWithPrefix(&quot;&quot;); </span>
+    }
+    
+    public boolean isEmpty() {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 0; i &lt; ALPHABET_SIZE; i++) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            if (root.subtree[i] != null) {</span>
+<span class="fc" id="L138">                return false;</span>
+            }
+        }
+<span class="fc" id="L141">        return true;</span>
+    }
+    
+    @Override
+    public Iterable&lt;String&gt; wordsWithPrefix(String prefix) {
+<span class="fc" id="L146">        TreeIterator iterator = new TreeIterator(prefix);</span>
+<span class="fc" id="L147">        TreeIterable iterable = new TreeIterable();</span>
+<span class="fc" id="L148">        iterable.setIterator(iterator);</span>
+        
+<span class="fc" id="L150">        return iterable;</span>
+    }
+    
+<span class="fc" id="L153">    private class TreeIterable implements Iterable&lt;String&gt; {</span>
+
+        private TreeIterator iterator;
+        
+        public void setIterator(TreeIterator iter) {
+<span class="fc" id="L158">            this.iterator = iter;</span>
+<span class="fc" id="L159">        }</span>
+        
+        @Override
+        public Iterator&lt;String&gt; iterator() {
+<span class="fc" id="L163">            return new TreeIterator(iterator);</span>
+        }
+        
+    }
+    
+    private class TreeIterator implements Iterator&lt;String&gt; {
+        
+        private String word;
+        private TreeIterator next;
+        
+<span class="fc" id="L173">        private Queue&lt;WordTree[]&gt; way   = new Queue&lt;WordTree[]&gt;();</span>
+<span class="fc" id="L174">        private Queue&lt;String&gt;     words = new Queue&lt;String&gt;();</span>
+        
+<span class="fc" id="L176">        private int lastCheckedLetterIndex = ALPHABET_SIZE;</span>
+        private WordTree[] currSubtree;
+        private String currWord;
+        
+<span class="fc" id="L180">        public TreeIterator() {</span>
+<span class="fc" id="L181">            word = null;</span>
+<span class="fc" id="L182">            next = null;</span>
+<span class="fc" id="L183">        }</span>
+        
+<span class="fc" id="L185">        public TreeIterator(TreeIterator iterator) {</span>
+<span class="fc" id="L186">            this.next = iterator.next;</span>
+<span class="fc" id="L187">            this.word = iterator.word;</span>
+<span class="fc" id="L188">            this.currSubtree = iterator.currSubtree;</span>
+<span class="fc" id="L189">            this.currWord = iterator.currWord;</span>
+<span class="fc" id="L190">            this.lastCheckedLetterIndex = iterator.lastCheckedLetterIndex;</span>
+<span class="fc" id="L191">            this.way = iterator.way;</span>
+<span class="fc" id="L192">            this.words = iterator.words;</span>
+<span class="fc" id="L193">        }</span>
+        
+<span class="fc" id="L195">        public TreeIterator(String prefix) {</span>
+<span class="fc bfc" id="L196" title="All 4 branches covered.">            if (isEmpty() || prefix == null) {</span>
+<span class="fc" id="L197">                return;</span>
+            }
+            
+<span class="fc" id="L200">            this.next = new TreeIterator();</span>
+        
+<span class="fc" id="L202">            WordTree prefixVertex = get(root, prefix, 0);</span>
+            
+<span class="fc bfc" id="L204" title="All 2 branches covered.">            if (prefixVertex == null) {</span>
+<span class="fc" id="L205">                return;</span>
+            }
+            
+<span class="fc" id="L208">            this.way.enqueue(prefixVertex.subtree);</span>
+<span class="fc" id="L209">            this.words.enqueue(prefix);</span>
+            
+<span class="fc bfc" id="L211" title="All 2 branches covered.">            if (prefixVertex.weight != 0) {</span>
+<span class="fc" id="L212">                this.next.word = prefix;</span>
+            }
+            else {
+<span class="fc" id="L215">                this.next.word = this.calculateNextWord();</span>
+            }
+<span class="fc" id="L217">        }</span>
+        
+        private String calculateNextWord() {
+<span class="fc" id="L220">            String searchedWord = &quot;&quot;;</span>
+            
+<span class="fc bfc" id="L222" title="All 2 branches covered.">            while (!way.isEmpty()) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">                if (this.lastCheckedLetterIndex == ALPHABET_SIZE) {</span>
+<span class="fc" id="L224">                    this.currSubtree = way.dequeue();</span>
+<span class="fc" id="L225">                    this.currWord    = words.dequeue();</span>
+<span class="fc" id="L226">                    this.lastCheckedLetterIndex = -1;</span>
+                }
+                
+<span class="fc" id="L229">                int i = this.lastCheckedLetterIndex + 1;</span>
+<span class="fc" id="L230">                boolean flag = false;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                for (; i &lt; ALPHABET_SIZE; i++) {</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">                    if (currSubtree[i] != null) {</span>
+                        
+<span class="fc" id="L234">                        way.enqueue(currSubtree[i].subtree);</span>
+<span class="fc" id="L235">                        words.enqueue(currWord</span>
+                                      + (char) (i + FIRST_CHAR_IN_ALPHABET));
+                        
+<span class="fc bfc" id="L238" title="All 2 branches covered.">                        if (currSubtree[i].weight != 0) {</span>
+<span class="fc" id="L239">                            searchedWord = currWord</span>
+                                        + (char) (i + FIRST_CHAR_IN_ALPHABET);
+<span class="fc" id="L241">                            flag = true;</span>
+<span class="fc" id="L242">                            break;</span>
+                        }
+                    }
+                }
+<span class="fc" id="L246">                this.lastCheckedLetterIndex = i;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">                if (flag) {</span>
+<span class="fc" id="L248">                    break;</span>
+                }
+<span class="fc" id="L250">            }</span>
+            
+<span class="fc" id="L252">            return searchedWord;</span>
+        }
+                
+        @Override
+        public boolean hasNext() {
+<span class="fc bfc" id="L257" title="All 6 branches covered.">            return next != null &amp;&amp; next.word != null &amp;&amp; !next.word.equals(&quot;&quot;);</span>
+        }
+
+        @Override
+        public String next() throws NoSuchElementException {
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            if (!hasNext()) {</span>
+<span class="fc" id="L263">                throw new NoSuchElementException();</span>
+            }
+            
+<span class="fc" id="L266">            word = next.word;</span>
+<span class="fc" id="L267">            next = new TreeIterator();</span>
+            
+<span class="fc" id="L269">            next.word = this.calculateNextWord();</span>
+            
+<span class="fc" id="L271">            return word;</span>
+        }
+        
+    }
+    
+    private int size(WordTree vertex) { 
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        if (vertex == null) {</span>
+<span class="fc" id="L278">            return 0;</span>
+        }
+        
+<span class="fc" id="L281">        int currentSize = 0;</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">        if (vertex.weight != 0) {</span>
+<span class="fc" id="L283">            currentSize++;</span>
+        }
+        
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        for (int i = 0; i &lt; ALPHABET_SIZE; i++) {</span>
+<span class="fc" id="L287">            currentSize += size(vertex.subtree[i]);</span>
+        }
+        
+<span class="fc" id="L290">        return currentSize; </span>
+    }
+    
+    @Override
+    public int size() {
+<span class="fc" id="L295">        return size(root); </span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

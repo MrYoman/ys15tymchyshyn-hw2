@@ -634,4 +634,15 @@ public class RWayTrieTest {
         assertEquals(expResult, result);
     }
     
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorNextHasNextFalse() {
+        RWayTrie rWayTrie = new RWayTrie();
+        rWayTrie.add(wordHello);
+        
+        Iterator<String> iterator = rWayTrie.wordsWithPrefix("h").iterator();
+        
+        iterator.next();
+        iterator.next();
+    }
+    
 }

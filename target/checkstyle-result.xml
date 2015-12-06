@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.2">
+<file name="D:\JavaProjects\Utils\Autocomplete\src\main\java\ua\yandex\shad\autocomplete\PrefixMatches.java">
+</file>
+<file name="D:\JavaProjects\Utils\Autocomplete\src\main\java\ua\yandex\shad\collections\Queue.java">
+</file>
+<file name="D:\JavaProjects\Utils\Autocomplete\src\main\java\ua\yandex\shad\tries\RWayTrie.java">
+</file>
+<file name="D:\JavaProjects\Utils\Autocomplete\src\main\java\ua\yandex\shad\tries\Trie.java">
+</file>
+<file name="D:\JavaProjects\Utils\Autocomplete\src\main\java\ua\yandex\shad\tries\Tuple.java">
+</file>
+</checkstyle>

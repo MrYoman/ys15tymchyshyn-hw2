@@ -216,14 +216,6 @@ public class RWayTrie implements Trie {
             }
         }
         
-        public void setNextIterator(TreeIterator iterator) {
-            this.next = iterator;
-        }
-        
-        public void setWord(String wordStr) {
-            this.word = wordStr;
-        }
-        
         private String calculateNextWord() {
             String searchedWord = "";
             
@@ -272,10 +264,7 @@ public class RWayTrie implements Trie {
             }
             
             word = next.word;
-            next = next.next;
-            if (next == null) {
-                next = new TreeIterator();
-            }
+            next = new TreeIterator();
             
             next.word = this.calculateNextWord();
             

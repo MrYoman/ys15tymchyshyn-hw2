@@ -74,7 +74,7 @@ public class PrefixMatches {
         return trie.size();
     }
     
-    private class TrieIterable implements Iterable<String> {
+    private static class TrieIterable implements Iterable<String> {
 
         private TrieIterator iterator = new TrieIterator(null, 0);
         
