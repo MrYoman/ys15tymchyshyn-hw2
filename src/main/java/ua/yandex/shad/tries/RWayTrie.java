@@ -46,9 +46,13 @@ public class RWayTrie implements Trie {
         }
     }
 
+    private boolean strIsNullOrEmpty(String word) {
+        return word == null || word.length() == 0;
+    }
+    
     @Override
     public boolean contains(String word) {
-        if (word == null || word.length() == 0) {
+        if (strIsNullOrEmpty(word)) {
             return false;
         }
         
@@ -64,11 +68,7 @@ public class RWayTrie implements Trie {
             }
         }
         
-        if (vertex.weight == 0) {
-            return false;
-        }
-        
-        return true;
+        return vertex.weight != 0;
     }
     
     private WordTree delete(WordTree vertex, String word, int distance) {
@@ -103,7 +103,7 @@ public class RWayTrie implements Trie {
     
     @Override
     public boolean delete(String word) {
-        if (word == null || word.length() == 0) {
+        if (strIsNullOrEmpty(word)) {
             return false;
         }
         
@@ -142,27 +142,15 @@ public class RWayTrie implements Trie {
     }
     
     @Override
-    public Iterable<String> wordsWithPrefix(String prefix) {
-        TreeIterator iterator = new TreeIterator(prefix);
-        TreeIterable iterable = new TreeIterable();
-        iterable.setIterator(iterator);
+    public Iterable<String> wordsWithPrefix(final String prefix) {
+        return new Iterable<String>() {
+            private TreeIterator iterator = new TreeIterator(prefix);
         
-        return iterable;
-    }
-    
-    private class TreeIterable implements Iterable<String> {
-
-        private TreeIterator iterator;
-        
-        public void setIterator(TreeIterator iter) {
-            this.iterator = iter;
-        }
-        
-        @Override
-        public Iterator<String> iterator() {
-            return new TreeIterator(iterator);
-        }
-        
+            @Override
+            public Iterator<String> iterator() {
+                return iterator;
+            } 
+        };
     }
     
     private class TreeIterator implements Iterator<String> {
@@ -170,8 +158,8 @@ public class RWayTrie implements Trie {
         private String word;
         private TreeIterator next;
         
-        private Queue<WordTree[]> way   = new Queue<WordTree[]>();
-        private Queue<String>     words = new Queue<String>();
+        private Queue<WordTree[]> way   = new Queue<>();
+        private Queue<String>     words = new Queue<>();
         
         private int lastCheckedLetterIndex = ALPHABET_SIZE;
         private WordTree[] currSubtree;
@@ -182,16 +170,6 @@ public class RWayTrie implements Trie {
             next = null;
         }
         
-        public TreeIterator(TreeIterator iterator) {
-            this.next = iterator.next;
-            this.word = iterator.word;
-            this.currSubtree = iterator.currSubtree;
-            this.currWord = iterator.currWord;
-            this.lastCheckedLetterIndex = iterator.lastCheckedLetterIndex;
-            this.way = iterator.way;
-            this.words = iterator.words;
-        }
-        
         public TreeIterator(String prefix) {
             if (isEmpty() || prefix == null) {
                 return;
@@ -200,7 +178,7 @@ public class RWayTrie implements Trie {
             this.next = new TreeIterator();
         
             WordTree prefixVertex = get(root, prefix, 0);
-            
+           
             if (prefixVertex == null) {
                 return;
             }
